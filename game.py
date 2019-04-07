@@ -1,8 +1,10 @@
 import random
 import curses
+import time
 
 import utils
 from sprites import blink, fire
+from sprites.rocket_sprite import space_ship
 
 
 def get_stars():
@@ -28,8 +30,13 @@ if __name__ == '__main__':
     coroutines = get_stars()
     canvas = utils.get_canvas()
     fire_animation = get_fire()
-
     coroutines.append(fire_animation)
+    main_rocket = utils.get_rocket_main()
+    rocket_frame_1 = utils.get_rocket_flame_1()
+    rocket_frame_2 = utils.get_rocket_flame_2()
+    rocket_animation = space_ship(canvas, main_rocket, [rocket_frame_1, rocket_frame_2])
+    coroutines.append(rocket_animation)
+
     while True:
         for coro in coroutines:
             try:

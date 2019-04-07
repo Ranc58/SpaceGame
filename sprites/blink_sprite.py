@@ -1,9 +1,7 @@
 import curses
 import asyncio
 
-
-def convert_ms_to_iterations(ms):
-    return ms * 100000
+import utils
 
 
 async def blink(canvas, row, column, symbol='*'):
@@ -13,7 +11,7 @@ async def blink(canvas, row, column, symbol='*'):
             text_type = star[0]
             time_for_sleep = star[1]
             iterations_count = 0
-            needles_count = convert_ms_to_iterations(time_for_sleep)
+            needles_count = utils.convert_ms_to_iterations(time_for_sleep)
             for _ in reversed(range(0, int(needles_count) + 1)):
                 if iterations_count == 0:
                     canvas.addstr(row, column, symbol, text_type)
