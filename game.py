@@ -1,50 +1,61 @@
 import random
 import curses
-import time
 
 import utils
 from sprites import blink, fire
 from sprites.rocket_sprite import space_ship
+from settings import SPACESHIP_SPEED, STARS_COUNT, FIRE_SPEED
 
 
-def get_stars():
+def get_stars(canvas):
     stars = []
     max_y, max_x = utils.get_terminal_size()
-    for _ in range(0, 100):
+    for _ in range(0, STARS_COUNT):
         symbol = random.choice('+*.:')
         y_coord = random.randint(1, max_y - 1)
         x_coord = random.randint(1, max_x - 1)
-        star = curses.wrapper(blink, y_coord, x_coord, symbol)
+        waiting_time = random.randint(0, 20)
+        star = blink(canvas, y_coord, x_coord, symbol, waiting_time)
         stars.append(star)
     return stars
 
 
-def get_fire():
+def get_fire(canvas):
     max_y, max_x = utils.get_terminal_size()
-    return fire(canvas, max_y - 5, round(max_x / 2), rows_speed=-2)
+    return fire(canvas, max_y - 11, round(max_x / 2) + 2, rows_speed=FIRE_SPEED)
 
 
-if __name__ == '__main__':
+def main(canvas, rocket_frame_1, rocket_frame_2):
     curses.update_lines_cols()
 
-    coroutines = get_stars()
-    canvas = utils.get_canvas()
-    fire_animation = get_fire()
+    coroutines = []
+    fire_animation = get_fire(canvas)
     coroutines.append(fire_animation)
-    main_rocket = utils.get_rocket_main()
-    rocket_frame_1 = utils.get_rocket_flame_1()
-    rocket_frame_2 = utils.get_rocket_flame_2()
-    rocket_animation = space_ship(canvas, main_rocket, [rocket_frame_1, rocket_frame_2])
+
+    stars = get_stars(canvas)
+    coroutines += stars
+    rocket_animation = space_ship(
+        canvas, [rocket_frame_1, rocket_frame_2], SPACESHIP_SPEED
+    )
     coroutines.append(rocket_animation)
 
     while True:
         for coro in coroutines:
             try:
-                curses.curs_set(False)
                 coro.send(None)
-                canvas.border()
-                canvas.refresh()
             except StopIteration:
                 coroutines.remove(coro)
             if len(coroutines) == 0:
                 break
+            utils.prepare_draw(canvas)
+
+
+if __name__ == '__main__':
+    try:
+        rocket_frame_1 = utils.get_rocket_flame_1()
+        rocket_frame_2 = utils.get_rocket_flame_2()
+    except FileNotFoundError as e:
+        print(f'Not found "{e.filename}"')
+        exit()
+    curses.update_lines_cols()
+    curses.wrapper(main, rocket_frame_1, rocket_frame_2)

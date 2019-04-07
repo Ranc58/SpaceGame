@@ -1,4 +1,7 @@
 import curses
+import asyncio
+
+from settings import ROCKET_FILE_1_PATH, ROCKET_FILE_2_PATH
 
 SPACE_KEY_CODE = 32
 LEFT_KEY_CODE = 260
@@ -19,12 +22,22 @@ def get_terminal_size():
 
 
 def convert_ms_to_iterations(ms):
-    return ms * 100000
+    return ms * 10
+
+
+def prepare_draw(canvas):
+    curses.curs_set(False)
+    canvas.border()
+    canvas.refresh()
+
+
+async def wait_time(secs):
+    for _ in range(0, int(secs)):
+        await asyncio.sleep(0)
 
 
 def read_controls(canvas):
     """Read keys pressed and returns tuple witl controls state."""
-
     rows_direction = columns_direction = 0
     space_pressed = False
 
@@ -54,8 +67,7 @@ def read_controls(canvas):
 
 
 def draw_frame(canvas, start_row, start_column, text, negative=False):
-    """Draw multiline text fragment on canvas. Erase text instead of drawing if negative=True is specified."""
-
+    """Draw multiline text fragment on canvas.Erase text instead of drawing if negative=True is specified."""
     rows_number, columns_number = canvas.getmaxyx()
 
     for row, line in enumerate(text.splitlines(), round(start_row)):
@@ -77,7 +89,7 @@ def draw_frame(canvas, start_row, start_column, text, negative=False):
 
 
 def get_frame_size(text):
-    """Calculate size of multiline text fragment. Returns pair (rows number, colums number)"""
+    """Calculate size of multiline text fragment.Returns pair (rows number, colums number)"""
 
     lines = text.splitlines()
     rows = len(lines)
@@ -85,19 +97,13 @@ def get_frame_size(text):
     return rows, columns
 
 
-def get_rocket_main():
-    with open ('frames/rocket.txt') as f:
-        rocket_string = f.readlines()
-    return ''.join(rocket_string)
-
-
 def get_rocket_flame_1():
-    with open ('frames/rocket_flame1.txt') as f:
+    with open(ROCKET_FILE_1_PATH) as f:
         rocket_string = f.readlines()
     return ''.join(rocket_string)
 
 
 def get_rocket_flame_2():
-    with open ('frames/rocket_flame2.txt') as f:
+    with open(ROCKET_FILE_2_PATH) as f:
         rocket_string = f.readlines()
     return ''.join(rocket_string)
