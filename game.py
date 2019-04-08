@@ -1,16 +1,17 @@
+import time
 import random
 import curses
 
 import utils
 from sprites import blink, fire
-from sprites.rocket_sprite import space_ship
-from settings import SPACESHIP_SPEED, STARS_COUNT, FIRE_SPEED
+from sprites.rocket_sprite import get_spaceship
+from settings import SPACESHIP_SPEED, STARS_COUNT, FIRE_SPEED, TIC_TIMEOUT
 
 
-def get_stars(canvas):
+def get_stars(canvas, stars_count=80):
     stars = []
     max_y, max_x = utils.get_terminal_size()
-    for _ in range(0, STARS_COUNT):
+    for _ in range(0, stars_count):
         symbol = random.choice('+*.:')
         y_coord = random.randint(1, max_y - 1)
         x_coord = random.randint(1, max_x - 1)
@@ -26,28 +27,30 @@ def get_fire(canvas):
 
 
 def main(canvas, rocket_frame_1, rocket_frame_2):
-    curses.update_lines_cols()
-
+    curses.curs_set(False)
+    canvas.border()
     coroutines = []
     fire_animation = get_fire(canvas)
     coroutines.append(fire_animation)
 
-    stars = get_stars(canvas)
+    stars = get_stars(canvas, STARS_COUNT)
     coroutines += stars
-    rocket_animation = space_ship(
+    spaceship = get_spaceship(
         canvas, [rocket_frame_1, rocket_frame_2], SPACESHIP_SPEED
     )
-    coroutines.append(rocket_animation)
+    coroutines.append(spaceship)
 
     while True:
         for coro in coroutines:
             try:
                 coro.send(None)
+
             except StopIteration:
                 coroutines.remove(coro)
             if len(coroutines) == 0:
                 break
-            utils.prepare_draw(canvas)
+            canvas.refresh()
+        time.sleep(TIC_TIMEOUT)
 
 
 if __name__ == '__main__':

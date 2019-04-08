@@ -25,12 +25,6 @@ def convert_ms_to_iterations(ms):
     return ms * 10
 
 
-def prepare_draw(canvas):
-    curses.curs_set(False)
-    canvas.border()
-    canvas.refresh()
-
-
 async def wait_time(secs):
     for _ in range(0, int(secs)):
         await asyncio.sleep(0)
@@ -99,11 +93,9 @@ def get_frame_size(text):
 
 def get_rocket_flame_1():
     with open(ROCKET_FILE_1_PATH) as f:
-        rocket_string = f.readlines()
-    return ''.join(rocket_string)
+        return f.read()
 
 
 def get_rocket_flame_2():
     with open(ROCKET_FILE_2_PATH) as f:
-        rocket_string = f.readlines()
-    return ''.join(rocket_string)
+        return f.read()
