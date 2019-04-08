@@ -25,6 +25,11 @@ def convert_ms_to_iterations(ms):
     return ms * 10
 
 
+def refresh_draw(canvas):
+    canvas.border()
+    canvas.refresh()
+
+
 async def wait_time(secs):
     for _ in range(0, int(secs)):
         await asyncio.sleep(0)

@@ -28,7 +28,7 @@ def get_fire(canvas):
 
 def main(canvas, rocket_frame_1, rocket_frame_2):
     curses.curs_set(False)
-    canvas.border()
+
     coroutines = []
     fire_animation = get_fire(canvas)
     coroutines.append(fire_animation)
@@ -49,7 +49,7 @@ def main(canvas, rocket_frame_1, rocket_frame_2):
                 coroutines.remove(coro)
             if len(coroutines) == 0:
                 break
-            canvas.refresh()
+            utils.refresh_draw(canvas)
         time.sleep(TIC_TIMEOUT)
 
 
