@@ -4,3 +4,5 @@ FIRE_SPEED = -0.3
 TIC_TIMEOUT = 0.1
 ROCKET_FILE_1_PATH = 'frames/rocket_flame1.txt'
 ROCKET_FILE_2_PATH = 'frames/rocket_flame2.txt'
+TRASH_LARGE_FILE = 'frames/trash_large.txt'
+TRASH_SMALL_FILE = 'frames/trash_small.txt'

@@ -1,7 +1,12 @@
 import curses
 import asyncio
 
-from settings import ROCKET_FILE_1_PATH, ROCKET_FILE_2_PATH
+from settings import (
+    ROCKET_FILE_1_PATH,
+    ROCKET_FILE_2_PATH,
+    TRASH_LARGE_FILE,
+    TRASH_SMALL_FILE,
+)
 
 SPACE_KEY_CODE = 32
 LEFT_KEY_CODE = 260
@@ -104,3 +109,13 @@ def get_rocket_flame_1():
 def get_rocket_flame_2():
     with open(ROCKET_FILE_2_PATH) as f:
         return f.read()
+
+
+def get_trash_large():
+    with open(TRASH_LARGE_FILE) as trash_file:
+        return trash_file.read()
+
+
+def get_trash_small():
+    with open(TRASH_SMALL_FILE) as trash_file:
+        return trash_file.read()
