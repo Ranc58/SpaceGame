@@ -1,6 +1,6 @@
 # Space game
 
-Small CLI game with space ship in  open space.
+Small CLI game with space ship in  open space. Train  project with asyncio
 
 
 # How to install and setup
