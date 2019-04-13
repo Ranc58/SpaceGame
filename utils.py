@@ -6,6 +6,10 @@ from settings import (
     ROCKET_FILE_2_PATH,
     TRASH_LARGE_FILE,
     TRASH_SMALL_FILE,
+    DUCK_FILE,
+    LAMP_FILE,
+    TRASH_XL_FILE,
+    HUBBLE_FILE
 )
 
 SPACE_KEY_CODE = 32
@@ -118,4 +122,24 @@ def get_trash_large():
 
 def get_trash_small():
     with open(TRASH_SMALL_FILE) as trash_file:
+        return trash_file.read()
+
+
+def get_trash_xl():
+    with open(TRASH_XL_FILE) as trash_file:
+        return trash_file.read()
+
+
+def get_duck():
+    with open(DUCK_FILE) as trash_file:
+        return trash_file.read()
+
+
+def get_hubble():
+    with open(HUBBLE_FILE) as trash_file:
+        return trash_file.read()
+
+
+def get_lamp():
+    with open(LAMP_FILE) as trash_file:
         return trash_file.read()
