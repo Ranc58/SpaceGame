@@ -9,7 +9,8 @@ from settings import (
     DUCK_FILE,
     LAMP_FILE,
     TRASH_XL_FILE,
-    HUBBLE_FILE
+    HUBBLE_FILE,
+    GAMEOVER_FILE,
 )
 
 SPACE_KEY_CODE = 32
@@ -75,7 +76,8 @@ def read_controls(canvas):
 
 
 def draw_frame(canvas, start_row, start_column, text, negative=False):
-    """Draw multiline text fragment on canvas.Erase text instead of drawing if negative=True is specified."""
+    """Draw multiline text fragment on canvas. Erase text instead of drawing if negative=True is specified."""
+
     rows_number, columns_number = canvas.getmaxyx()
 
     for row, line in enumerate(text.splitlines(), round(start_row)):
@@ -91,6 +93,15 @@ def draw_frame(canvas, start_row, start_column, text, negative=False):
 
             if column >= columns_number:
                 break
+
+            if symbol == ' ':
+                continue
+
+            # Check that current position it is not in a lower right corner of the window
+            # Curses will raise exception in that case. Don`t ask why…
+            # https://docs.python.org/3/library/curses.html#curses.window.addch
+            if row == rows_number - 1 and column == columns_number - 1:
+                continue
 
             symbol = symbol if not negative else ' '
             canvas.addch(row, column, symbol)
@@ -131,15 +142,35 @@ def get_trash_xl():
 
 
 def get_duck():
-    with open(DUCK_FILE) as trash_file:
-        return trash_file.read()
+    with open(DUCK_FILE) as duck:
+        return duck.read()
 
 
 def get_hubble():
-    with open(HUBBLE_FILE) as trash_file:
-        return trash_file.read()
+    with open(HUBBLE_FILE) as hubble:
+        return hubble.read()
 
 
 def get_lamp():
-    with open(LAMP_FILE) as trash_file:
-        return trash_file.read()
+    with open(LAMP_FILE) as lamp:
+        return lamp.read()
+
+
+def get_gameover():
+    with open(GAMEOVER_FILE) as gameover:
+        return gameover.read()
+
+
+async def show_gameover(canvas):
+    max_available_row, max_available_column = get_terminal_size()
+    gameover_frame = get_gameover()
+    rows, columns = get_frame_size(gameover_frame)
+    center_row = (max_available_row / 2) - (rows / 2)
+    center_column = (max_available_column / 2) - (columns / 2)
+
+
+    while True:
+        canvas.addstr(4, 4, f'{max_available_row}/{center_row}|||{max_available_column}/{center_column}')
+        draw_frame(canvas,  center_row, center_column, gameover_frame)
+        await asyncio.sleep(0)
+

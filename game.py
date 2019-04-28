@@ -5,11 +5,13 @@ import random
 import curses
 
 import utils
+from obstacles_code import show_obstacles
 from sprites import blink, fire
 from sprites.trash_sprite import fly_garbage
 from sprites.rocket_sprite import animate_spaceship, run_spaceship
-from settings import STARS_COUNT, FIRE_SPEED, TIC_TIMEOUT
+from settings import STARS_COUNT, FIRE_SPEED, TIC_TIMEOUT, TRASH_START_COUNT
 from global_vars import coroutines
+from global_vars import obstacles
 
 
 def get_stars(canvas, stars_count=80):
@@ -53,9 +55,9 @@ def get_trash(canvas):
 
 async def fill_orbit_with_garbage(canvas):
     global coroutines
-    start_len = len(coroutines)
+    global obstacles
     while True:
-        if len(coroutines) < start_len:
+        if len(obstacles) < TRASH_START_COUNT:
             coroutines.append(get_trash(canvas))
         await asyncio.sleep(0)
 
@@ -76,10 +78,11 @@ def main(canvas, rocket_frame_1, rocket_frame_2):
     stars = get_stars(canvas, STARS_COUNT)
     coroutines += stars
 
-    for _ in range(0, 8):
-        garbage = get_trash(canvas)
-        coroutines.append(garbage)
     coroutines.append(fill_orbit_with_garbage(canvas))
+
+    # obstacles_list = show_obstacles(canvas, obstacles)
+    # coroutines.append(obstacles_list)
+
     while True:
         for coro in coroutines:
             try:

@@ -1,6 +1,6 @@
 SPACESHIP_SPEED = 2
 STARS_COUNT = 80
-FIRE_SPEED = -0.3
+FIRE_SPEED = -3
 TIC_TIMEOUT = 0.1
 ROCKET_FILE_1_PATH = 'frames/rocket_flame1.txt'
 ROCKET_FILE_2_PATH = 'frames/rocket_flame2.txt'
@@ -10,3 +10,5 @@ DUCK_FILE = 'frames/duck.txt'
 LAMP_FILE = 'frames/lamp.txt'
 TRASH_XL_FILE = 'frames/trash_xl.txt'
 HUBBLE_FILE = 'frames/hubble.txt'
+GAMEOVER_FILE = 'frames/gameover.txt'
+TRASH_START_COUNT = 10
