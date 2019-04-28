@@ -12,3 +12,4 @@ TRASH_XL_FILE = 'frames/trash_xl.txt'
 HUBBLE_FILE = 'frames/hubble.txt'
 GAMEOVER_FILE = 'frames/gameover.txt'
 TRASH_START_COUNT = 10
+CHANGE_YEAR_DELAY = 20

@@ -4,7 +4,7 @@ from physics import update_speed
 from settings import FIRE_SPEED
 from sprites import fire
 from utils import draw_frame, read_controls, get_frame_size
-from global_vars import spaceship_frame, coroutines, obstacles
+from global_vars import spaceship_frame, coroutines, obstacles, year
 
 
 def correct_row(max_available_row, current_row, row_frame):
@@ -34,13 +34,17 @@ async def animate_spaceship(sprites):
 
 
 async def run_spaceship(canvas):
+    global year
     global spaceship_frame
     global coroutines
     global obstacles
+    global spaceship_frame
     max_available_row, max_available_column = utils.get_terminal_size()
     row, column = max_available_row - 10, max_available_column / 2
     row_speed = column_speed = 0
+
     while True:
+        current_year = year.get('current_year')
         row_frame, column_frame = get_frame_size(spaceship_frame)
 
         prev_sprite_row, prev_sprite_column = row, column
@@ -51,7 +55,7 @@ async def run_spaceship(canvas):
         row_speed, column_speed = update_speed(row_speed, column_speed, row_pos, column_pos)
         row += row_pos + row_speed
         column += column_pos + column_speed
-        if space:
+        if space and current_year >= 2020:
             # for gun position in the center of the spaceship
             column_for_fire = column+2
             fire_animation = fire(canvas, row, column_for_fire, rows_speed=FIRE_SPEED)
@@ -64,7 +68,6 @@ async def run_spaceship(canvas):
                 coroutines.append(utils.show_gameover(canvas))
                 return
         await asyncio.sleep(0)
-
         draw_frame(canvas, prev_sprite_row, prev_sprite_column, prev_spaceship_frame, negative=True)
         draw_frame(canvas, row, column, spaceship_frame, negative=False)
 

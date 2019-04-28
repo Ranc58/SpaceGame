@@ -1,6 +1,7 @@
 import curses
 import asyncio
 
+
 from settings import (
     ROCKET_FILE_1_PATH,
     ROCKET_FILE_2_PATH,
@@ -20,6 +21,18 @@ UP_KEY_CODE = 259
 DOWN_KEY_CODE = 258
 
 
+PHRASES = {
+    1957: "First Sputnik",
+    1961: "Gagarin flew!",
+    1969: "Armstrong got on the moon!",
+    1971: "First orbital space station Salute-1",
+    1981: "Flight of the Shuttle Columbia",
+    1998: 'ISS start building',
+    2011: 'Messenger launch to Mercury',
+    2020: "Take the plasma gun! Shoot the garbage!",
+}
+
+
 def get_canvas():
     canvas = curses.initscr()
     return canvas
@@ -29,10 +42,6 @@ def get_terminal_size():
     canvas = get_canvas()
     max_y, max_x = canvas.getmaxyx()
     return max_y, max_x
-
-
-def convert_ms_to_iterations(ms):
-    return ms * 10
 
 
 def refresh_draw(canvas):
@@ -107,6 +116,14 @@ def draw_frame(canvas, start_row, start_column, text, negative=False):
             canvas.addch(row, column, symbol)
 
 
+def get_message(year):
+    phrase = PHRASES.get(year)
+    message = year
+    if phrase:
+        message = f'{year}: {phrase}'
+    return message
+
+
 def get_frame_size(text):
     """Calculate size of multiline text fragment.Returns pair (rows number, colums number)"""
 
@@ -167,10 +184,23 @@ async def show_gameover(canvas):
     rows, columns = get_frame_size(gameover_frame)
     center_row = (max_available_row / 2) - (rows / 2)
     center_column = (max_available_column / 2) - (columns / 2)
-
-
     while True:
-        canvas.addstr(4, 4, f'{max_available_row}/{center_row}|||{max_available_column}/{center_column}')
         draw_frame(canvas,  center_row, center_column, gameover_frame)
         await asyncio.sleep(0)
 
+
+def get_garbage_delay_tics(year):
+    if year < 1961:
+        return None
+    elif year < 1969:
+        return 20
+    elif year < 1981:
+        return 14
+    elif year < 1995:
+        return 10
+    elif year < 2010:
+        return 8
+    elif year < 2020:
+        return 6
+    else:
+        return 2

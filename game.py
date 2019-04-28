@@ -1,17 +1,14 @@
 import _curses
-import asyncio
 import time
 import random
 import curses
 
 import utils
-from obstacles_code import show_obstacles
 from sprites import blink, fire
 from sprites.trash_sprite import fly_garbage
 from sprites.rocket_sprite import animate_spaceship, run_spaceship
-from settings import STARS_COUNT, FIRE_SPEED, TIC_TIMEOUT, TRASH_START_COUNT
-from global_vars import coroutines
-from global_vars import obstacles
+from settings import STARS_COUNT, FIRE_SPEED, TIC_TIMEOUT, CHANGE_YEAR_DELAY
+from global_vars import coroutines, year, obstacles
 
 
 def get_stars(canvas, stars_count=80):
@@ -47,41 +44,56 @@ def get_trash(canvas):
     trash_size = random.choice(list_sizes_keys)
     trash_frame = sizes_map[trash_size]()
     column_for_trash = random.randint(1, columns)
-    await_time = random.randint(0, 50)
-    trash = fly_garbage(canvas, column_for_trash, trash_frame, await_time)
-
-    return trash
+    return fly_garbage(canvas, column_for_trash, trash_frame)
 
 
 async def fill_orbit_with_garbage(canvas):
     global coroutines
     global obstacles
+    global year
     while True:
-        if len(obstacles) < TRASH_START_COUNT:
-            coroutines.append(get_trash(canvas))
-        await asyncio.sleep(0)
+        current_year = year.get('current_year')
+        await_time = utils.get_garbage_delay_tics(current_year)
+        await utils.wait_time(await_time)
+        garbage = get_trash(canvas)
+        coroutines.append(garbage)
+
+
+async def change_year_data(canvas):
+    global year
+    max_y, max_x = utils.get_terminal_size()
+
+    while True:
+        current_year = year.get('current_year')
+        previous_message = utils.get_message(current_year-1)
+        utils.draw_frame(canvas, round(max_y - 2), round(2), str(previous_message), negative=True)
+        message = utils.get_message(current_year)
+        utils.draw_frame(canvas, round(max_y - 2), round(2), str(message))
+        if current_year == 1961:
+            orbit_with_garbage = fill_orbit_with_garbage(canvas)
+            coroutines.append(orbit_with_garbage)
+        if current_year == 2020:
+            fire_animation = get_fire(canvas)
+            coroutines.append(fire_animation)
+        await utils.wait_time(CHANGE_YEAR_DELAY)
+        year['current_year'] += 1
 
 
 def main(canvas, rocket_frame_1, rocket_frame_2):
-    curses.curs_set(False)
     global coroutines
+    global year
 
+    curses.curs_set(False)
+    year_change = change_year_data(canvas)
+    coroutines.append(year_change)
     spaceship_frame = animate_spaceship([rocket_frame_1, rocket_frame_2])
     coroutines.append(spaceship_frame)
 
     spaceship = run_spaceship(canvas)
     coroutines.append(spaceship)
 
-    fire_animation = get_fire(canvas)
-    coroutines.append(fire_animation)
-
     stars = get_stars(canvas, STARS_COUNT)
     coroutines += stars
-
-    coroutines.append(fill_orbit_with_garbage(canvas))
-
-    # obstacles_list = show_obstacles(canvas, obstacles)
-    # coroutines.append(obstacles_list)
 
     while True:
         for coro in coroutines:
