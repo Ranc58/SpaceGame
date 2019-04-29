@@ -1,4 +1,6 @@
 import _curses
+
+import sys
 import time
 import random
 import curses
@@ -101,12 +103,8 @@ def main(canvas, rocket_frame_1, rocket_frame_2):
                 coro.send(None)
             except StopIteration:
                 coroutines.remove(coro)
-            except RuntimeError:
-                coroutines.remove(coro)
             except _curses.error:
                 continue
-            if len(coroutines) == 0:
-                break
             utils.refresh_draw(canvas)
         time.sleep(TIC_TIMEOUT)
 
@@ -116,7 +114,7 @@ if __name__ == '__main__':
         rocket_frame_1 = utils.get_rocket_flame_1()
         rocket_frame_2 = utils.get_rocket_flame_2()
     except FileNotFoundError as e:
-        print(f'Not found "{e.filename}"')
-        exit()
+        print(e, file=sys.stderr)
+        sys.exit(2)
     curses.update_lines_cols()
     curses.wrapper(main, rocket_frame_1, rocket_frame_2)
